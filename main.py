@@ -1,9 +1,5 @@
-import paho.mqtt.client as mqtt
-
-
 def main():
-    # Use a breakpoint in the code line below to debug your script.
-    print('Hi')
+    pass
 
 
 if __name__ == '__main__':
