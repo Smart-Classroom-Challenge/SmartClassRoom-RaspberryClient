@@ -1,2 +1,2 @@
-# SmartClassRoom-Client
-Microcontroller Client Python
+# SmartClassRoom-RaspberryClient
+Raspberry Microcontroller Client Python
