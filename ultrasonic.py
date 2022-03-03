@@ -1,9 +1,11 @@
 from grove.grove_ultrasonic_ranger import GroveUltrasonicRanger
 import time
 
-sonar = GroveUltrasonicRanger(16)
+sonarleft = GroveUltrasonicRanger(16)
+sonarright = GroveUltrasonicRanger(5)
 
 print('Detecting distance...')
 while True:
-    print('{} cm'.format(sonar.get_distance()))
-    time.sleep(0.00001)
+    print('Left: {} cm'.format(sonarleft.get_distance()))
+    print('Right: {} cm'.format(sonarright.get_distance()))
+    time.sleep(1)
