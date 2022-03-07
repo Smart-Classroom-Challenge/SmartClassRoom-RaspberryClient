@@ -9,7 +9,7 @@ mqtt_host = "mqtt3.thingspeak.com"
 # Your MQTT credentials for the device
 mqtt_client_id = "AA0aHiQwMQALKwAmNSUDDSw"
 mqtt_username = "AA0aHiQwMQALKwAmNSUDDSw"
-mqtt_password = "iN3I1ElEOoAot/p1+0n6RPTd"
+mqtt_password = "iSBiT09UpVgBzX0lHzp52hPH"
 
 t_transport = "websockets"
 t_port = 80
@@ -28,7 +28,7 @@ while True:
     try:
         print("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
               mqtt_username, " PWD ", mqtt_password)
-        publish.single(topic, payload, hostname=mqtt_host, transport=t_transport, port=t_port, client_id=mqtt_client_id,
+        publish.single(topic, payload,qos=0, hostname=mqtt_host, transport=t_transport, port=t_port, client_id=mqtt_client_id,
                        auth={'username': mqtt_username, 'password': mqtt_password})
     except KeyboardInterrupt:
         print("\nExiting.")
