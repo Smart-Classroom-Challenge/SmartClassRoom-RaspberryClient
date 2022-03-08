@@ -1,35 +1,43 @@
+from time import sleep
+import json
 import paho.mqtt.publish as publish
 
-# The ThingSpeak Channel ID.
-channel_ID = "1665323"
-
 # The hostname of the ThingSpeak MQTT broker.
-mqtt_host = "mqtt3.thingspeak.com"
+mqtt_host = "mqtt.flespi.io"
 
 # Your MQTT credentials for the device
-mqtt_client_id = "AA0aHiQwMQALKwAmNSUDDSw"
-mqtt_username = "AA0aHiQwMQALKwAmNSUDDSw"
-mqtt_password = "iN3I1ElEOoAot/p1+0n6RPTd"
+mqtt_client_id = "mqtt-raspberry-pi-demo"
+mqtt_username = "8e0v0tanDPfBzeKkuasrarRQUKwN0WQW0EiPXg2oV6NiaossmIKmXp2HYnlO9ZAZ"
+mqtt_password = ""
 
-t_transport = "websockets"
-t_port = 80
-
-topic = "channels/" + channel_ID + "/publish"
+topic = "fhnw/classroom/x/"
 
 while True:
-    co2 = 1332
+    co2 = 1001
     temperature = 21.1
     humidity = 49
+    motion = False
+    light = 1034
 
-    # build the payload string.
-    payload = "field1=" + str(co2) + "&field2=" + str(temperature) + "&field3=" + str(humidity)
+    data = {
+        "co2": co2,
+        "temperature": temperature,
+        "humidity": humidity,
+        "motion": motion,
+        "light": light
+    }
+
+    payload = json.dumps(data)
 
     # attempt to publish this data to the topic.
     try:
         print("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
               mqtt_username, " PWD ", mqtt_password)
-        publish.single(topic, payload, hostname=mqtt_host, transport=t_transport, port=t_port, client_id=mqtt_client_id,
+
+        publish.single(topic, payload, hostname=mqtt_host, client_id=mqtt_client_id,
                        auth={'username': mqtt_username, 'password': mqtt_password})
+        sleep(5)
+
     except KeyboardInterrupt:
         print("\nExiting.")
         break
