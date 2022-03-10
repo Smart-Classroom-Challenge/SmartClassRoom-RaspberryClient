@@ -1,6 +1,9 @@
 from time import sleep
 import json
 import paho.mqtt.publish as publish
+import threading
+from datetime import datetime, timezone
+
 
 # The hostname of the ThingSpeak MQTT broker.
 mqtt_host = "mqtt.flespi.io"
@@ -12,6 +15,11 @@ mqtt_password = ""
 
 topic = "fhnw/classroom/x/"
 
+def send(payload):
+    target=publish.single(topic, payload, hostname=mqtt_host, client_id=mqtt_client_id,
+                       auth={'username': mqtt_username, 'password': mqtt_password})
+
+
 while True:
     co2 = 1001
     temperature = 21.1
@@ -20,6 +28,7 @@ while True:
     light = 1034
 
     data = {
+        "time": datetime.now(tz=timezone.utc).isoformat(),
         "co2": co2,
         "temperature": temperature,
         "humidity": humidity,
@@ -34,8 +43,10 @@ while True:
         print("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
               mqtt_username, " PWD ", mqtt_password)
 
-        publish.single(topic, payload, hostname=mqtt_host, client_id=mqtt_client_id,
-                       auth={'username': mqtt_username, 'password': mqtt_password})
+        t = threading.Thread(target=send, args=(payload,))
+        t.daemon = True
+        t.start()
+
         sleep(5)
 
     except KeyboardInterrupt:
