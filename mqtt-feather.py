@@ -1,6 +1,8 @@
+import pytz
 import json
 import adafruit_ble
 from time import sleep
+from datetime import datetime
 import paho.mqtt.publish as publish
 from adafruit_ble.services.nordic import UARTService
 
@@ -18,13 +20,6 @@ mqtt_password = ""
 
 topic = "fhnw/classroom/1/"
 
-# Global sensor data
-co2 = None
-temperature = None
-humidity = None
-motion = None
-light = None
-
 while True:
     print("Scanning for an CIRCUITPY3137...")
     for adv in ble.start_scan(timeout=50, minimum_rssi=-80):
@@ -39,43 +34,45 @@ while True:
         while connection.connected:
             message = uart.read()
             if message != None:
-                message = message.decode("utf-8").replace("\n", ";")
+                message = message.decode("utf-8")
                 if message != "":
 
                     # process valid data
+                    data = {
+                        "time": str(datetime.now(pytz.timezone("Europe/Zurich"))),
+                        "co2": None,
+                        "temperature": None,
+                        "humidity": None,
+                        "motion": None,
+                        "light": None
+                    }
+
                     message = message.split(";")
                     for val in message:
                         col = val.split(":")
                         if len(col) == 3:
                             if col[0] == "CO2":
-                                co2 = col[1] 
+                                data["co2"] = col[1] 
                             if col[0] == "TEM":
-                                temperature  = col[1] 
+                                data["temperature"]  = float(col[1]) / 100
                             if col[0] == "HUM":
-                                humidity = col[1] 
+                                data["humidity"] = float(col[1]) / 100
                             if col[0] == "MOT":
-                                motion = col[1] 
+                                data["motion"] = col[1] 
                             if col[0] == "LIG":
-                                light = col[1] 
+                                data["light"] = col[1] 
 
                     # setup data for transmission
-                    data = {
-                        "co2": co2,
-                        "temperature": temperature,
-                        "humidity": humidity,
-                        "motion": motion,
-                        "light": light
-                    } 
                     payload = json.dumps(data)
 
                     # attempt to publish this data to the topic.
                     try:
-                        print("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
-                            mqtt_username, " PWD ", mqtt_password)
+                        if not (data["co2"] == None and data ["temperature"] == None and data["humidity"] == None and data["motion"] == None and data["light"] == None):
+                            print("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
+                                mqtt_username, " PWD ", mqtt_password)
 
-                        publish.single(topic, payload, hostname=mqtt_host, client_id=mqtt_client_id,
-                                    auth={'username': mqtt_username, 'password': mqtt_password})
-                        sleep(1)
+                            publish.single(topic, payload, hostname=mqtt_host, client_id=mqtt_client_id,
+                                        auth={'username': mqtt_username, 'password': mqtt_password})
                     except KeyboardInterrupt:
                         print("\nExiting.")
                         break
