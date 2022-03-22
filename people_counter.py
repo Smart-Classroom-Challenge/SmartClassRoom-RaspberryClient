@@ -28,9 +28,13 @@ def get_distance(sonar, ms_min_wait = 32):
     return distance
 
 
-def person_infront(sonar):
-    diff = abs(get_distance(sonar) -  100)
-    return diff > 20
+def person_infront(sensor):
+    if sensor == "right":
+        return max(right_arr) > 500 or min(right_arr) < 70
+    elif sensor == "left":
+        return max(left_arr) > 500 or min(left_arr) < 70
+    else:
+        raise Exception(f"Unknown sensor: {sensor}")
 
 
 def send(payload):
@@ -72,6 +76,9 @@ def on_entrance_event(change):
 sonarleft = GroveUltrasonicRanger(16)
 sonarright = GroveUltrasonicRanger(5)
 
+i = 0
+left_arr  = [0,0,0]
+right_arr = [0,0,0]
 
 persons = 0
 
@@ -83,13 +90,12 @@ S = 0
 # S=4: vor dem rechten Sensor ist/wat eine Person, vor dem linken Sensor ist eine Person.
 
 while True:
-    left = person_infront(sonarleft)
-    right = person_infront(sonarright)
+    left_arr[i] = get_distance(sonarleft)
+    right_arr[i] = get_distance(sonarright)
 
-#    current_milis = current_millis()
-#    print(";".join([str(current_milis), str(left), str(right)]))
-
-
+    left = person_infront("left")
+    right = person_infront("right")
+    
     if S == 0:
         if left: S = 1
         elif right: S = 3
@@ -114,3 +120,4 @@ while True:
 
 
     print(persons)
+    i = (i+1) % 3
