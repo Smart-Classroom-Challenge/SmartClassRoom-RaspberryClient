@@ -100,6 +100,9 @@ def measurement():
 
                                     publish.single(topic_measurement, payload, hostname=mqtt_host, client_id=mqtt_client_id,
                                                 auth={'username': mqtt_username, 'password': mqtt_password})
+
+                                    log_measurement = open('measurement.txt', 'a')
+                                    log_measurement.write(payload + "\n")
                             except Exception as e:
                                 logging.error("".join(("Measurement error: ", e)))
                 featherconnected = False
@@ -131,6 +134,9 @@ def connectionhistory():
 
             publish.single(topic_connectionhistory, payload, hostname=mqtt_host, client_id=mqtt_client_id,
                             auth={'username': mqtt_username, 'password': mqtt_password})
+            
+            log_connectionhistory = open('connectionhistory.txt', 'a')
+            log_connectionhistory.write(payload + "\n")
             time.sleep(60)
         except Exception as e:
             logging.error("".join(("Connection History error: ", e)))
@@ -178,7 +184,10 @@ def peoplecounter():
         try:
             logging.debug("".join(("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
                         mqtt_username, " PWD ", mqtt_password)))
-    
+            
+            log_peoplecounter = open('peoplecounter.txt', 'a')
+            log_peoplecounter.write(payload + "\n")
+
             t = threading.Thread(target=send, args=(payload,))
             t.daemon = True
             t.start()
