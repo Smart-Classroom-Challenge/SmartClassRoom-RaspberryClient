@@ -193,7 +193,7 @@ def peoplecounter():
                     send(queue.pop(0))
                 except Exception as e:
                     logging.error("".join(("People counter on entrance event error: ", e)))
-            time.sleep(50)
+            sleep_millis(50)
 
     t = threading.Thread(target=check_queue)
     t.start()
