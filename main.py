@@ -95,14 +95,14 @@ def measurement():
                             # attempt to publish this data to the topic.
                             try:
                                 if not (data["co2"] == None and data ["temperature"] == None and data["humidity"] == None and data["motion"] == None and data["light"] == None):
+                                    with open('measurement.txt', 'a') as log:
+                                        log.write(payload + "\n")
+
                                     logging.debug("".join(("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
                                         mqtt_username, " PWD ", mqtt_password)))
 
                                     publish.single(topic_measurement, payload, hostname=mqtt_host, client_id=mqtt_client_id,
                                                 auth={'username': mqtt_username, 'password': mqtt_password})
-
-                                    log_measurement = open('measurement.txt', 'a')
-                                    log_measurement.write(payload + "\n")
                             except Exception as e:
                                 logging.error("".join(("Measurement error: ", e)))
                 featherconnected = False
@@ -128,15 +128,14 @@ def connectionhistory():
 
             # setup data for transmission
             payload = json.dumps(data)
-
+            with open('connectionhistory.txt', 'a') as log:
+                log.write(payload + "\n")
             logging.debug("".join(("Writing Payload = ", payload, " to host: ", mqtt_host, " clientID= ", mqtt_client_id, " User ",
                     mqtt_username, " PWD ", mqtt_password)))
 
             publish.single(topic_connectionhistory, payload, hostname=mqtt_host, client_id=mqtt_client_id,
                             auth={'username': mqtt_username, 'password': mqtt_password})
-            
-            log_connectionhistory = open('connectionhistory.txt', 'a')
-            log_connectionhistory.write(payload + "\n")
+
             time.sleep(60)
         except Exception as e:
             logging.error("".join(("Connection History error: ", e)))
