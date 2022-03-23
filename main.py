@@ -50,6 +50,7 @@ def measurement():
             logging.info("".join(("Measurement: ", "Scanning for Feather...")))
             for adv in ble.start_scan(timeout=50):
                 if adv.complete_name == feathername:
+                    logging.info("".join(("Measurement: ", "Found:", adv.complete_name, " ... trying to connect")))
                     connection = ble.connect(adv)
                     logging.info("".join(("Measurement: ", "Connected to:", adv.complete_name)))
                     break
