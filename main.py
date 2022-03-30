@@ -114,6 +114,7 @@ def measurement():
 def connectionhistory():
     global featherconnected
     mqtt_client_id = string_generator()
+    time.sleep(10)
 
     while True:
         try:
