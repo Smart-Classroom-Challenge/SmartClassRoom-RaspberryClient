@@ -105,10 +105,10 @@ def measurement():
                                     publish.single(topic_measurement, payload, hostname=mqtt_host, client_id=mqtt_client_id,
                                                 auth={'username': mqtt_username, 'password': mqtt_password})
                             except Exception as e:
-                                logging.error("".join(("Measurement error: ", e)))
+                                logging.error("".join(("Measurement error: ", str(e))))
                 featherconnected = False
         except Exception as e:
-            logging.error("".join(("Measurement error: ", e)))
+            logging.error("".join(("Measurement error: ", str(e))))
             featherconnected = False
 
 def connectionhistory():
@@ -140,7 +140,7 @@ def connectionhistory():
 
             time.sleep(60)
         except Exception as e:
-            logging.error("".join(("Connection History error: ", e)))
+            logging.error("".join(("Connection History error: ", str(e))))
 
 def peoplecounter():
     mqtt_client_id = string_generator()
@@ -193,7 +193,7 @@ def peoplecounter():
                 try:
                     send(queue.pop(0))
                 except Exception as e:
-                    logging.error("".join(("People counter on entrance event error: ", e)))
+                    logging.error("".join(("People counter on entrance event error: ", str(e))))
             sleep_millis(50)
 
     t = threading.Thread(target=check_queue)
