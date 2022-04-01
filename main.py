@@ -1,4 +1,3 @@
-import os
 import sys
 import pytz
 import json
@@ -7,6 +6,7 @@ import random
 import string
 import logging
 import threading
+import subprocess
 import adafruit_ble
 import paho.mqtt.publish as publish
 
@@ -112,6 +112,12 @@ def measurement():
             featherconnected = False
 
 def connectionhistory():
+    def terminal(cmd):
+        stdout, stderr = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        if stderr != b'':
+            raise Exception(stderr.decode('utf-8').replace('\n', ' '))
+        return stdout.decode('utf-8').replace('\n', '')
+
     global featherconnected
     mqtt_client_id = string_generator()
     time.sleep(10)
@@ -121,13 +127,13 @@ def connectionhistory():
             data = {
                 "time": str(datetime.now(pytz.timezone("Europe/Zurich"))),
                 "feather-connected": featherconnected,
-                "local-ip": os.popen("ip -4 addr show wlan0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'").read().replace('\n', ''),
-                "wlan-strength": os.popen("iwconfig wlan0 | grep -o 'Signal level=.*'").read().replace('\n', '').split('=')[1].split(' ')[0],
-                "ping-flespi": os.popen("ping -c 1 flespi.io | grep -o 'time=.*'").read().replace('\n', '').split('=')[1].split(' ')[0],
-                "ping-django": os.popen("ping -c 1 django.roulet.dev | grep -o 'time=.*'").read().replace('\n', '').split('=')[1].split(' ')[0],
-                "ping-grafana": os.popen("ping -c 1 grafana.roulet.dev | grep -o 'time=.*'").read().replace('\n', '').split('=')[1].split(' ')[0]
+                "local-ip": terminal("ip -4 addr show wlan0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'"),
+                "wlan-strength": terminal("iwconfig wlan0 | grep -o 'Signal level=.*'").split('=')[1].split(' ')[0],
+                "ping-flespi": terminal("ping -c 1 flespi.io | grep -o 'time=.*'").split('=')[1].split(' ')[0],
+                "ping-django": terminal("ping -c 1 django.roulet.dev | grep -o 'time=.*'").split('=')[1].split(' ')[0],
+                "ping-grafana": terminal("ping -c 1 grafana.roulet.dev | grep -o 'time=.*'").split('=')[1].split(' ')[0]
             }
-
+            
             # setup data for transmission
             payload = json.dumps(data)
             with open('connectionhistory.txt', 'a') as log:
