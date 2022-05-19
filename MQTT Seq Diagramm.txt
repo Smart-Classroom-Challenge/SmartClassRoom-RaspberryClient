@@ -1,5 +1,10 @@
 title Smart Classroom MQTT Communication
 
+
+database Timescale DB
+
+
+
 Django Backend->MQTT Broker:connect()
 MQTT Broker->Django Backend:connection acknownledgement
 
@@ -35,4 +40,7 @@ end
 
 
 
-MQTT Broker->Django Backend:Message({topic: obj, message: object})
+
+MQTT Broker->Django Backend:callback on_message({topic: obj, message: object})
+Django Backend->Timescale DB:save(Django:ORM:object(obj))
+
