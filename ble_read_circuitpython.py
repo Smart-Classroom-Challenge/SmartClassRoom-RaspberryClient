@@ -11,7 +11,7 @@ connection = None
 while True:
     print("Scanning for an advertisement...")
     for adv in ble.start_scan(timeout=50, minimum_rssi=-80):
-        if adv.complete_name == "CIRCUITPY3137":
+        if adv.complete_name == "CIRCUITPY4c1f":
             connection = ble.connect(adv)
             print("Connected to:", adv.complete_name)
             break
